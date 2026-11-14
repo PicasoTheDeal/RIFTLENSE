@@ -1,0 +1,11 @@
+{
+"-24.10,-70.02": {"site": "atacama", "t": 17.07, "tRange": 14.74, "precipMmYr": 7.3, "rh": 44.09, "albedo": 0.17},
+"64.85,-16.83": {"site": "holuhraun", "t": -2.84, "tRange": 4.1, "precipMmYr": 861.4, "rh": 94.09, "albedo": 0.63},
+"14.24,40.30": {"site": "dallol", "t": 25.96, "tRange": 11.94, "precipMmYr": 448.9, "rh": 46.84, "albedo": 0.16},
+"14.15,40.33": {"site": "danakil", "t": 33.03, "tRange": 12.49, "precipMmYr": 273.8, "rh": 41.16, "albedo": 0.16},
+"8.97,39.93": {"site": "fentale", "t": 25.33, "tRange": 13.49, "precipMmYr": 719, "rh": 49.25, "albedo": 0.15},
+"36.23,-116.77": {"site": "death-valley", "t": 19.21, "tRange": 14.73, "precipMmYr": 138.7, "rh": 31.09, "albedo": 0.19},
+"13.60,40.67": {"site": "erta-ale", "t": 33.65, "tRange": 12.57, "precipMmYr": 295.7, "rh": 37.88, "albedo": 0.15},
+"75.38,-89.68": {"site": "devon", "t": -14.42, "tRange": 4.64, "precipMmYr": 310.3, "rh": 94.36, "albedo": 0.46},
+"-77.60,162.90": {"site": "dry-valleys", "t": -21.88, "tRange": 5.07, "precipMmYr": 65.7, "rh": 80.65, "albedo": 0.56}
+}

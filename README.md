@@ -7,7 +7,7 @@
 
 Team **N0xCod3** for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/), Addis Ababa local event, 14 to 15 November 2026, Shaggar Institute of Technology.
 
-**Challenge:** [Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars](https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/)
+**Challenge:** [Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars](https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/)[cite: 3]
 
 ## The idea
 
@@ -15,76 +15,131 @@ NASA tests equipment for the Moon and Mars at places on Earth that behave like t
 
 Afar has Dallol, an acidic, hypersaline hydrothermal field astrobiologists use to study life at its limits. It has Erta Ale, one of the few persistent lava lakes on Earth. And it is actively splitting apart. Between December 2024 and early 2025 a magma intrusion under Fentale and Dofan caused thousands of earthquakes, cracked the Addis to Djibouti road and railway, and displaced tens of thousands of people. Satellite radar saw the ground move before the cracks opened.
 
-RIFTLENS is one web map with three layers that turn that into evidence.
+RIFTLENS is one interactive web map built with **Svelte 5, Vite, and MapLibre GL JS** featuring three analytical layers and real-time NASA GIBS satellite raster overlays[cite: 4, 9, 19].
 
 ## The three layers
 
-### 1. Analog Index
-A similarity score between any place on Earth and two targets: Jezero crater on Mars and the lunar south pole near Shackleton crater. Built from terrain, surface temperature, aridity, albedo, minerals and geological activity. Each site gets a scorecard showing where the analogy holds and where it breaks, since Earth cannot reproduce lunar gravity, vacuum, radiation or the thin Martian atmosphere.
+### 1. Analog Finder (`AnalogPanel`)
 
-### 2. The Dance (radar)
-NISAR and Sentinel-1 radar coherence and deformation over the Awash to Fentale corridor, 2024 to 2026, on a time slider. Rifting by dyke intrusion is the same process that formed Cerberus Fossae on Mars. The same layer works as a hazard view for the railway, the Kesem sugar estate and the Aluto and Tulu Moye geothermal fields.
+A similarity score (0–100) comparing 44 preset global sites—or any clicked point on Earth—against **Mars (Jezero Crater)**, the **Moon (Lunar South Pole / Shackleton)**, or look-alike terrestrial sites[cite: 11, 18, 19].
 
-### 3. The Pulse (thermal)
-A harmonised MODIS and VIIRS hotspot record from 2000 to today for any area drawn on the map. Separates permanent volcanic heat (Erta Ale, Dallol) from vegetation fires (Bale, Simien), shows a month by year calendar, flags anomalies against the long term median, and exports CSV.
+* **Live Scoring:** Computes similarity using NASA POWER long-term climatology (temperature, diurnal range, precipitation, humidity, surface albedo)[cite: 13, 18] and SRTM elevation/local relief via AWS Terrarium tiles[cite: 12, 13, 18], combined with known geological tags (hydrothermal, salt, volcanic, rift, acid, impact).
+* **Scorecards:** Displays metric breakdowns and explicitly lists where the analogy breaks (e.g., gravity, vacuum, radiation, atmospheric pressure)[cite: 3, 15, 18].
 
-## Data
+### 2. The Dance (`DancePanel`)
 
-| Layer | Dataset | Source |
-|---|---|---|
-| Analog | SRTM / NASADEM elevation | [Earthdata Search](https://search.earthdata.nasa.gov) |
-| Analog | MODIS LST (MOD11), NDVI (MOD13), albedo (MCD43) | [AppEEARS](https://appeears.earthdatacloud.nasa.gov) |
-| Analog | ASTER GDEM and surface reflectance | [Earthdata Search](https://search.earthdata.nasa.gov) |
-| Analog | GPM IMERG rainfall | [Giovanni](https://giovanni.gsfc.nasa.gov) |
-| Mars target | MOLA elevation, THEMIS infrared | [USGS Astrogeology](https://astrogeology.usgs.gov/search), [Mars Trek](https://trek.nasa.gov/mars) |
-| Moon target | LOLA elevation, Diviner temperature | [PDS Geosciences](https://pds-geosciences.wustl.edu), [Moon Trek](https://trek.nasa.gov/moon) |
-| Radar | Sentinel-1, NISAR, HyP3 on demand InSAR | [ASF Vertex](https://search.asf.alaska.edu) |
-| Radar | ARIA interferograms | [ARIA](https://aria-share.jpl.nasa.gov) |
-| Thermal | MODIS C6.1 and VIIRS active fire | [FIRMS](https://firms.modaps.eosdis.nasa.gov/download) |
-| Context | Roads, railway, towns | [OpenStreetMap / Geofabrik](https://download.geofabrik.de/africa/ethiopia.html) |
-| Context | Volcano records | [Smithsonian GVP](https://volcano.si.edu) |
+Tracks ground deformation and seismic swarms over the Awash–Fentale corridor and global rift/volcanic regions on an interactive weekly or monthly time slider[cite: 3, 17, 19].
 
-Full notes in [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md). Method details in [docs/PLAN.md](docs/PLAN.md).
+* **Seismic & Radar Integration:** Queries live USGS earthquake catalogues[cite: 13, 17] alongside Sentinel-1 SAR acquisition footprints from the Alaska Satellite Facility (ASF) API[cite: 13, 17].
+* **InSAR Overlays:** Supports georeferenced interferograms and coherence PNG overlays (`public/data/radar/manifest.json`) that appear dynamically as the time slider passes their acquisition dates.
+* **Infrastructure Context:** Highlights critical assets including the Addis–Djibouti railway, roads, towns, and geothermal fields[cite: 3, 12, 17].
+
+### 3. The Pulse (`PulsePanel` & `WorldPulse`)
+
+Combines global real-time natural event tracking with a 26-year harmonised thermal record[cite: 16]:
+
+* **Global Events (NASA EONET):** Live clustering and month-by-month filtering for wildfires, volcanoes, severe storms, dust/haze, and floods worldwide[cite: 13, 14].
+* **Harmonised FIRMS Hotspot Calendar (2000–Present):** Merges NASA FIRMS MODIS C6.1 and VIIRS (S-NPP & NOAA-20) active fire archives onto a `0.1°` monthly grid. Automatically flags and filters out permanent volcanic/industrial heat sources (Erta Ale, Dallol)[cite: 5, 16] to isolate seasonal vegetation fires[cite: 3, 5], compares counts against the 26-year monthly median[cite: 16], supports custom bounding-box drawing[cite: 16], and exports CSVs[cite: 14, 16].
+
+### Base Maps & Satellite Overlays
+
+* **Vector Base Map:** OpenFreeMap vector tiles with dynamic Dark/Light "paper and ink" theming[cite: 9, 10, 12] and SRTM terrain hillshading[cite: 12].
+* **NASA GIBS WMTS Overlays:** Switchable daily/static satellite layers (MODIS/VIIRS Land Surface Temperature, Surface Albedo, Snow Cover, SMAP Soil Moisture, VIIRS True Colour, ASTER 30 m Shaded Relief, and VIIRS Night Lights) with date selection and raster texture filters (Mono, High Contrast, Inverted, Hue Shifted)[cite: 9, 12].
+
+---
+
+## Quickstart & Running Locally
+
+### 1. Run the Web App
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+To build for static hosting (Cloudflare Pages, GitHub Pages, Netlify):
+
+```bash
+npm run build
+```
+
+Publish the resulting `app/dist/` directory.
+
+### 2. Build the Harmonised Fire Calendar (`npm run fire`)
+
+To generate or update `app/public/data/fire_calendar.json` from NASA FIRMS yearly archives:
+
+```bash
+cd app
+npm run fire
+# Or specify a custom year range / country:
+npm run fire -- --from 2015 --to 2026 --country Ethiopia
+```
+
+Note: The script downloads MODIS (2000+), VIIRS S-NPP (2012+), and VIIRS NOAA-20 (2018+) CSVs into `data/raw/firms/`, computes per-cell VIIRS/MODIS overlap scaling ratios, and flags static volcanic heat[cite: 5].
+
+### 3. Add Processed InSAR / Radar Products
+
+Generate interferograms or coherence maps (e.g., via ASF HyP3), export as PNGs into `app/public/data/radar/`, and register them in `app/public/data/radar/manifest.json`:
+
+```json
+[
+  {
+    "id": "ifg-1",
+    "label": "Interferogram 2024-12-20 to 2025-01-13",
+    "date1": "2024-12-20",
+    "date2": "2025-01-13",
+    "url": "./data/radar/ifg-1.png",
+    "bounds": [39.5, 8.5, 40.6, 9.6]
+  }
+]
+```
+
+## Data & Offline Fallbacks
+
+Live data is fetched directly in the browser without API keys from NASA POWER, NASA GIBS, NASA EONET, AWS Open Data Terrain Tiles, USGS Earthquake Hazards, and ASF Search.
+
+Saved seed files in `app/public/data/` ensure the application remains functional offline or on slow connections:
+
+| File | Description |
+| --- | --- |
+| `world_sites.json` | Precomputed climate and terrain metrics for the 44 global analog sites[cite: 11, 18] |
+| `power_seed.json` | Cached NASA POWER climatology fallback for preset sites |
+| `quakes_fentale.json` | Cached USGS earthquake catalogue (M2.5+) for the Fentale corridor |
+| `fire_calendar.json` | Harmonised 26-year monthly hotspot grid built via `npm run fire` |
+| `radar/manifest.json` | Metadata and bounding boxes for georeferenced InSAR PNG overlays[cite: 17, 19] |
+
+Full notes on datasets are in `docs/DATA_SOURCES.md`.
 
 ## Study areas
 
 | Site | What it is | Analog role |
-|---|---|---|
-| Dallol | Hydrothermal salt and sulphur field | Mars hydrothermal chemistry, extremophiles |
-| Erta Ale | Shield volcano with lava lake | Volcanic process, persistent thermal anomaly |
-| Danakil salt flats | Below sea level evaporite basin | Martian evaporites and salts |
-| Fentale and Dofan | 2024 to 2025 dyke intrusion | Active rifting, Cerberus Fossae |
+| --- | --- | --- |
+| Dallol | Hydrothermal salt and sulphur field | Mars hydrothermal chemistry, extremophiles[cite: 3] |
+| Erta Ale | Shield volcano with persistent lava lake[cite: 3] | Volcanic processes, persistent thermal anomaly[cite: 3] |
+| Danakil salt flats | Below-sea-level evaporite basin[cite: 3] | Martian evaporites and salts[cite: 3] |
+| Fentale & Dofan | 2024–2025 dyke intrusion & seismic swarm[cite: 3] | Active rifting, Cerberus Fossae on Mars[cite: 3] |
 
-Benchmarks for comparison: Atacama, Devon Island, Iceland.
+Benchmarked against 40+ global sites including Atacama, Devon Island, Iceland (Holuhraun), Qaidam Basin, Rio Tinto, and McMurdo Dry Valleys.
 
 ## Repository layout
 
+```text
+app/                  Svelte 5 + Vite + MapLibre web application
+  public/data/        Offline seed JSONs, fire calendar, and radar overlays
+  scripts/            Node.js data pipeline (build_fire_calendar.mjs)
+  src/components/     AnalogPanel, DancePanel, PulsePanel, WorldPulse, ScoreCard
+  src/lib/            Scoring math (analog.js), API clients (sources.js), sites & styles
+data/raw/             Raw FIRMS/satellite downloads (gitignored)
+docs/                 Data sources and methodology notes
+pitch/                Presentation slides, image bank, and credits
 ```
-app/              web map (MapLibre GL JS or Leaflet, static hosting)
-data/raw/         downloads, not tracked in git
-data/processed/   clipped and harmonised layers the app reads
-docs/             plan and data sources
-notebooks/        01_analog_index, 02_rift_radar, 03_fire_calendar
-pitch/            slides, image bank and credits
-```
 
-## Status
+## Team & Credits
 
-- [x] Concept, data plan, image bank
-- [ ] Analog Index score and site scorecards
-- [ ] Radar coherence stack over Fentale
-- [ ] Harmonised MODIS and VIIRS calendar
-- [ ] Web map with all three layers
-- [ ] Demo and project page submitted
+Team: N0xCod3, Addis Ababa[cite: 3]
 
-## Team
+Credits: Images in `pitch/images` are public domain (NASA, USGS) or Creative Commons (Wikimedia Commons, ESA). Full attributions are in `pitch/images/CREDITS.md`.
 
-N0xCod3, Addis Ababa.
-
-## Credits
-
-Images in `pitch/images` are public domain (NASA, USGS) or Creative Commons (Wikimedia Commons, ESA). Licence and source for each one are in [pitch/images/CREDITS.md](pitch/images/CREDITS.md).
-
-## Licence
-
-[MIT](LICENSE)
+Licence: MIT[cite: 3]
