@@ -13,7 +13,7 @@ Team **N0xCod3** for the [NASA Space Apps Challenge 2026](https://www.spaceappsc
 
 NASA tests equipment for the Moon and Mars at places on Earth that behave like them. The usual list is Atacama, Iceland, Devon Island. One of the strongest candidates sits in Ethiopia and has barely been characterised with data.
 
-Afar has Dallol, an acidic, hypersaline hydrothermal field astrobiologists use to study life at its limits. It has Erta Ale, one of the few persistent lava lakes on Earth. And it is actively splitting apart. Between December 2024 and early 2025 a magma intrusion under Fentale and Dofan caused thousands of earthquakes, cracked the Addis to Djibouti road and railway, and displaced tens of thousands of people. Satellite radar saw the ground move before the cracks opened.
+Afar has Dallol, an acidic, hypersaline  hydrothermal field astrobiologists use to study life at its limits. It has Erta Ale, one of the few persistent lava lakes on Earth. And it is actively splitting apart. Between December 2024 and early 2025 a magma intrusion under Fentale and Dofan caused thousands of earthquakes, cracked the Addis to Djibouti road and railway, and displaced tens of thousands of people. Satellite radar saw the ground move before the cracks opened.
 
 RIFTLENS is one interactive web map built with **Svelte 5, Vite, and MapLibre GL JS** featuring three analytical layers and real-time NASA GIBS satellite raster overlays[cite: 4, 9, 19].
 
