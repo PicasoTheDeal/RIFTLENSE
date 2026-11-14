@@ -1,0 +1,22 @@
+# raw downloads never go to git
+data/raw/*
+!data/raw/.gitkeep
+# big processed rasters, keep small tiles only
+*.tif
+*.tiff
+*.hdf
+*.h5
+*.nc
+*.zip
+*.SAFE/
+# notebooks checkpoints and python junk
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.venv/
+venv/
+# node
+node_modules/
+dist/
+.env
+.DS_Store
