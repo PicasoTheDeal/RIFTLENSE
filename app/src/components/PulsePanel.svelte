@@ -41,6 +41,13 @@
 
   // LAZY LOADING LOGIC
   $effect(async () => {
+    if (areaId === 'none') {
+      activeCountry = 'none';
+      cal = null;
+      loaded = true;
+      return;
+    }
+    
     if (!targetFile || targetFile === activeCountry) return;
     loaded = false;
     const j = await getFireCalendar(targetFile);
@@ -76,12 +83,19 @@
     return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] } };
   }
 
+  // UPDATE MAP BOUNDS & BOX
   $effect(() => {
-    if (ready && cal && area && map.getSource('fire-area')) {
-      map.getSource('fire-area').setData(boxGeo(area.bbox));
-      const [w, s, e, n] = area.bbox;
-      map.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 9, duration: 600 });
+    if (!ready || !map.getSource('fire-area')) return;
+    
+    if (areaId === 'none' || !area) {
+      map.getSource('fire-area').setData({ type: 'FeatureCollection', features: [] });
+      map.getSource('fire-cells').setData({ type: 'FeatureCollection', features: [] });
+      return;
     }
+    
+    map.getSource('fire-area').setData(boxGeo(area.bbox));
+    const [w, s, e, n] = area.bbox;
+    map.fitBounds([[w, s], [e, n]], { padding: 60, maxZoom: 9, duration: 600 });
   });
 
   let cellFeatures = $state.raw([]);
@@ -93,9 +107,16 @@
     });
   });
 
+  // UPDATE MAP POINTS
   $effect(() => {
-    const hide = hideStatic, f = cellFeatures;
-    if (ready && map.getSource('fire-cells')) map.getSource('fire-cells').setData({ type: 'FeatureCollection', features: hide ? f.filter((x) => !x.properties.s) : f });
+    const hide = hideStatic, f = cellFeatures, a = area;
+    if (ready && map.getSource('fire-cells')) {
+      if (!a) {
+        map.getSource('fire-cells').setData({ type: 'FeatureCollection', features: [] });
+      } else {
+        map.getSource('fire-cells').setData({ type: 'FeatureCollection', features: hide ? f.filter((x) => !x.properties.s) : f });
+      }
+    }
   });
 
   $effect(() => {
@@ -176,8 +197,10 @@
 
 <h3>Detailed hotspot calendar (FIRMS)</h3>
 
-{#if !loaded}
-  <p class="small muted">Loading harmonised hotspot record for {area.name}...</p>
+{#if areaId === 'none'}
+  <!-- Empty state to keep spacing neat -->
+{:else if !loaded}
+  <p class="small muted">Loading harmonised hotspot record for {area?.name || 'area'}...</p>
 {:else if !cal}
   <div class="empty">
     <p class="small">Not built yet. In the <code>app</code> folder run <code>npm run fire</code>.</p>
@@ -185,6 +208,7 @@
 {:else}
   <div class="row">
     <select bind:value={areaId} aria-label="Area">
+      <option value="none">None (Hide detailed map)</option>
       {#each FIRE_AREAS as a}<option value={a.id}>{a.name}</option>{/each}
       {#if custom}<option value="custom">Drawn area</option>{/if}
     </select>
@@ -228,6 +252,17 @@
   <div class="row" style="margin-top:12px">
     <button class="tbtn" onclick={download}>Download CSV</button>
     <span class="small muted">{area.name}, {series.months[0]} to {series.months[series.months.length - 1]}</span>
+  </div>
+{/if}
+
+<!-- The select dropdown must exist outside the {:else if} blocks so you can switch back -->
+{#if !loaded || areaId === 'none' || !cal}
+  <div class="row" style="margin-top: 12px">
+    <select bind:value={areaId} aria-label="Area">
+      <option value="none">None (Hide detailed map)</option>
+      {#each FIRE_AREAS as a}<option value={a.id}>{a.name}</option>{/each}
+      {#if custom}<option value="custom">Drawn area</option>{/if}
+    </select>
   </div>
 {/if}
 
