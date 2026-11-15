@@ -47,12 +47,24 @@ export const FENTALE_BOX = { minLat: 8.5, maxLat: 9.6, minLon: 39.5, maxLon: 40.
 
 // Selectable areas for the fire calendar.
 export const FIRE_AREAS = [
-  { id: 'ethiopia', name: 'All of Ethiopia', bbox: [33.0, 3.4, 48.0, 14.9] },
-  { id: 'bale', name: 'Bale Mountains', bbox: [39.3, 6.4, 40.3, 7.2] },
-  { id: 'simien', name: 'Simien Mountains', bbox: [37.9, 13.0, 38.6, 13.5] },
-  { id: 'gambella', name: 'Gambella', bbox: [33.5, 7.3, 35.0, 8.6] },
-  { id: 'erta-ale', name: 'Erta Ale', bbox: [40.5, 13.45, 40.85, 13.75] },
-  { id: 'dallol', name: 'Dallol', bbox: [40.2, 14.15, 40.4, 14.35] }
+  { id: 'ethiopia', name: 'Ethiopia', bbox: [33.0, 3.4, 48.0, 14.9], file: 'Ethiopia' },
+  { id: 'kenya', name: 'Kenya', bbox: [33.9, -4.7, 41.9, 5.5], file: 'Kenya' },
+  { id: 'tanzania', name: 'Tanzania', bbox: [29.3, -11.7, 40.5, -1.0], file: 'Tanzania' },
+  { id: 'somalia', name: 'Somalia', bbox: [40.9, -1.7, 51.4, 12.0], file: 'Somalia' },
+  { id: 'sudan', name: 'Sudan', bbox: [21.8, 3.4, 38.6, 22.2], file: 'Sudan' },
+  { id: 'south-africa', name: 'South Africa', bbox: [16.4, -34.8, 32.9, -22.1], file: 'South_Africa' },
+  { id: 'drc', name: 'DR Congo', bbox: [12.2, -13.5, 31.3, 5.4], file: 'Democratic_Republic_of_the_Congo' },
+  { id: 'angola', name: 'Angola', bbox: [11.6, -18.0, 24.1, -4.3], file: 'Angola' },
+  { id: 'zambia', name: 'Zambia', bbox: [21.9, -18.1, 33.7, -8.2], file: 'Zambia' },
+  { id: 'mozambique', name: 'Mozambique', bbox: [30.2, -26.9, 40.8, -10.4], file: 'Mozambique' },
+  { id: 'nigeria', name: 'Nigeria', bbox: [2.6, 4.2, 14.6, 13.9], file: 'Nigeria' },
+  { id: 'madagascar', name: 'Madagascar', bbox: [43.2, -25.6, 50.5, -11.9], file: 'Madagascar' },
+  { id: 'zimbabwe', name: 'Zimbabwe', bbox: [25.2, -22.4, 33.0, -15.6], file: 'Zimbabwe' },
+  { id: 'ghana', name: 'Ghana', bbox: [-3.2, 4.7, 1.2, 11.2], file: 'Ghana' },
+  { id: 'cameroon', name: 'Cameroon', bbox: [8.5, 1.6, 16.2, 13.1], file: 'Cameroon' },
+  { id: 'bale', name: 'Bale Mountains', bbox: [39.3, 6.4, 40.3, 7.2], file: 'Ethiopia' },
+  { id: 'simien', name: 'Simien Mountains', bbox: [37.9, 13.0, 38.6, 13.5], file: 'Ethiopia' },
+  { id: 'erta-ale', name: 'Erta Ale', bbox: [40.5, 13.45, 40.85, 13.75], file: 'Ethiopia' }
 ];
 
 // Regions for the ground motion view. minMag keeps worldwide queries small enough to load fast.

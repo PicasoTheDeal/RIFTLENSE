@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import * as maplibregl from 'maplibre-gl';
   import AnalogPanel from './components/AnalogPanel.svelte';
   import DancePanel from './components/DancePanel.svelte';
@@ -7,13 +8,8 @@
   import { baseStyle, applyTheme, DATASETS, TEXTURES, gibsTiles } from './lib/style.js';
   import { WORLD } from './lib/world.js';
   import { POIS } from './lib/sites.js';
+  import { theme } from './lib/theme.js';
 
-  const store = {
-    get(k, d) { try { return localStorage.getItem(k) ?? d; } catch { return d; } },
-    set(k, v) { try { localStorage.setItem(k, v); } catch {} }
-  };
-
-  let theme = $state(store.get('rl-theme', 'dark'));
   let mode = $state('analog');
   let map = $state(null);
   let query = $state('');
@@ -33,15 +29,6 @@
   const places = [...WORLD.map((s) => ({ name: s.name, lat: s.lat, lon: s.lon, z: 8 })), ...POIS.map((p) => ({ name: p.name, lat: p.lat, lon: p.lon, z: 9 }))]
     .filter((p, i, a) => a.findIndex((q) => q.name === p.name) === i);
 
-  $effect(() => { document.documentElement.dataset.theme = theme; store.set('rl-theme', theme); });
-
-  // Set the attribute first so panels that read colours on remount see the new theme.
-  function toggleTheme() {
-    const t = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = t;
-    theme = t;
-  }
-
   function go(e) {
     e.preventDefault();
     const q = query.trim().toLowerCase();
@@ -51,19 +38,23 @@
   }
 
   onMount(() => {
-    document.documentElement.dataset.theme = theme;
-    const m = new maplibregl.Map({ container: el, center: [25, 15], zoom: 1.8, style: baseStyle(theme), attributionControl: false });
+    // Init before the map is created so baseStyle() gets the right theme
+    // on first paint, not after a flash of dark.
+    theme.init();
+    const initialTheme = get(theme);
+    const m = new maplibregl.Map({ container: el, center: [25, 15], zoom: 1.8, style: baseStyle(initialTheme), attributionControl: false });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     m.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
     m.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: 'NASA GIBS, NASA POWER, OpenStreetMap, OpenFreeMap' }), 'bottom-left');
-    // Start as soon as the style is ready. Waiting for every tile can hang on a slow connection.
     const ready = () => { if (!map) map = m; };
     m.once('style.load', ready);
     m.once('load', ready);
     return () => m.remove();
   });
 
-  $effect(() => { if (map) applyTheme(map, theme); });
+  // Reactive to the theme store. Fires on toggle, and harmlessly on first
+  // run after `map` becomes non-null (re-applies the same colours).
+  $effect(() => { if (map) applyTheme(map, $theme); });
 
   // NASA GIBS overlay: rebuilt when the dataset or date changes, restyled when texture or opacity changes.
   $effect(() => {
@@ -94,7 +85,7 @@
       {#each MODES as m}
         <button class="tbtn" class:on={mode === m.id} onclick={() => (mode = m.id)}>{m.n} {m.label}</button>
       {/each}
-      <button class="tbtn" onclick={toggleTheme}>{theme === 'dark' ? 'Light' : 'Dark'}</button>
+      <button class="tbtn" onclick={() => theme.toggle()}>{$theme === 'dark' ? 'Light' : 'Dark'}</button>
     </nav>
   </header>
 
@@ -134,17 +125,16 @@
       {#if !map}
         <p class="lbl muted">Loading map</p>
       {:else}
-        {#key theme}
-          {#if mode === 'analog'}<AnalogPanel {map} />
-          {:else if mode === 'dance'}<DancePanel {map} />
-          {:else}<PulsePanel {map} />{/if}
-        {/key}
+        {#if mode === 'analog'}<AnalogPanel {map} />
+        {:else if mode === 'dance'}<DancePanel {map} />
+        {:else}<PulsePanel {map} />{/if}
       {/if}
     </aside>
   </main>
 </div>
 
 <style>
+  /* unchanged */
   .shell { display: flex; flex-direction: column; height: 100%; }
   .top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; padding: 12px var(--pad); }
   .wordmark { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 13px; letter-spacing: 0.12em; }

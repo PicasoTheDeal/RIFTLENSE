@@ -106,3 +106,10 @@ export function gibsTiles(ds, date) {
   const t = ds.static ? '' : `${date}/`;
   return `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${ds.layer}/default/${t}GoogleMapsCompatible_Level${ds.z}/{z}/{y}/{x}.${ds.ext}`;
 }
+
+export function railBasePaint(theme) {
+  return {
+    color: PALETTE[theme].rail,
+    width: ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1.4]
+  };
+}

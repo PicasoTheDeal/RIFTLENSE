@@ -4,14 +4,15 @@
   import { WORLD, REGIONS } from '../lib/world.js';
   import { TARGETS, OPTIONS, scoreSite, similarity, EARTH_LIMITS } from '../lib/analog.js';
   import { getClimate, getTerrain } from '../lib/sources.js';
-  import { css } from '../lib/style.js';
+  import { palette } from '../lib/theme.js';
   import ScoreCard from './ScoreCard.svelte';
 
   let { map } = $props();
-  const INK = css('--ink'), PAPER = css('--paper');
+  const INK = $derived($palette.ink);
+  const PAPER = $derived($palette.paper);
 
   let world = $state({});
-  let against = $state('mars'); // 'mars', 'moon' or a site id
+  let against = $state('mars');
   let options = $state(OPTIONS.map((o) => o.key));
   let region = $state('All');
   let selected = $state(null);
@@ -71,6 +72,14 @@
   }
   $effect(() => { const g = geo(); if (ready) map.getSource('world')?.setData(g); });
 
+  $effect(() => {
+    const p = $palette;
+    if (!ready || !map.getLayer('world-sites')) return;
+    map.setPaintProperty('world-sites', 'circle-color', ['case', ['==', ['get', 'ref'], 1], p.paper, p.ink]);
+    map.setPaintProperty('world-sites', 'circle-stroke-color', ['case', ['==', ['get', 'ref'], 1], p.ink, p.paper]);
+    map.setPaintProperty('world-labels', 'text-color', p.paper);
+  });
+
   function onClick(e) {
     const f = map.queryRenderedFeatures(e.point, { layers: ['world-sites'] })[0];
     if (f) return pick(WORLD.find((x) => x.id === f.properties.id));
@@ -79,14 +88,25 @@
 
   onMount(() => {
     const el = document.createElement('div');
-    el.style.cssText = `width:34px;height:34px;border:1px solid ${INK};border-radius:50%;pointer-events:none`;
+    el.style.cssText = `width:34px;height:34px;border:1px solid ${$palette.ink};border-radius:50%;pointer-events:none`;
     marker = new maplibregl.Marker({ element: el });
     fetch('./data/world_sites.json').then((r) => r.json()).then((j) => (world = j.sites)).catch(() => (error = 'Could not load the saved world data.'));
 
     map.addSource('world', { type: 'geojson', data: geo() });
     map.addLayer({ id: 'world-sites', type: 'circle', source: 'world', paint: {
-      'circle-radius': ['case', ['==', ['get', 'ref'], 1], 9, ['has', 'score'], ['interpolate', ['linear'], ['get', 'score'], 0, 7, 100, 15], 5],
-      'circle-color': ['case', ['==', ['get', 'ref'], 1], PAPER, INK], 'circle-stroke-color': ['case', ['==', ['get', 'ref'], 1], INK, PAPER], 'circle-stroke-width': 1.5
+      'circle-radius': ['case', 
+        ['==', ['get', 'ref'], 1], 12, 
+        ['has', 'score'], ['interpolate', ['linear'], ['get', 'score'], 0, 7, 100, 18], 
+        5
+      ],
+      'circle-color': ['case', ['==', ['get', 'ref'], 1], PAPER, INK], 
+      'circle-stroke-color': ['case', ['==', ['get', 'ref'], 1], INK, PAPER], 
+      'circle-stroke-width': ['case', 
+        ['==', ['get', 'ref'], 1], 3, 
+        ['>=', ['get', 'score'], 75], 3, 
+        1.5 
+      ],
+      'circle-opacity': 0.85
     } });
     map.addLayer({ id: 'world-labels', type: 'symbol', source: 'world', filter: ['has', 'score'],
       layout: { 'text-field': ['to-string', ['get', 'score']], 'text-font': ['Noto Sans Bold'], 'text-size': 10, 'text-allow-overlap': true },

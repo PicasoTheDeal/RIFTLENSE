@@ -124,14 +124,21 @@ export async function getRadarManifest() {
 }
 
 // Harmonised fire calendar built by scripts/build_fire_calendar.mjs.
-export async function getFireCalendar() {
-  try { const r = await fetch('./data/fire_calendar.json'); return r.ok ? await r.json() : null; } catch { return null; }
+export async function getFireCalendar(country) {
+  const url = `./data/fire_calendars/${country}.json`;
+  try { const r = await fetch(url); return r.ok ? await r.json() : null; } catch { return null; }
 }
+
+const eonetCache = new Map();
 
 // NASA EONET natural events worldwide (wildfires, volcanoes, storms and more).
 export async function getEvents(category, start, end) {
+  const k = `eonet:${category}:${start}:${end}`;
+  if (eonetCache.has(k)) return eonetCache.get(k);
   const url = `https://eonet.gsfc.nasa.gov/api/v3/events/geojson?category=${category}&status=all&start=${start}&end=${end}&limit=5000`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('EONET returned ' + res.status);
-  return res.json();
+  const j = await res.json();
+  eonetCache.set(k, j);
+  return j;
 }

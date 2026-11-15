@@ -4,7 +4,7 @@ Svelte 5 + Vite + MapLibre. One map, three layers:
 
 - **Analog Index**: click anywhere to score how Mars-like or Moon-like a place is. Climate from NASA POWER, local relief from SRTM based terrain tiles, known geology for preset sites. Rank Ethiopian sites against Atacama, Devon Island, Iceland, Death Valley and the Dry Valleys.
 - **The Dance**: earthquakes around Fentale and Dofan since June 2024 (USGS) and every Sentinel-1 pass over the corridor (ASF search), on a weekly time slider. Processed InSAR products show on the map at their date.
-- **The Pulse**: harmonised MODIS + VIIRS hotspot calendar from NASA FIRMS, with volcanic and industrial heat flagged, area selection, anomaly view and CSV export.
+- **The Pulse**: harmonised MODIS + VIIRS global hotspot calendar from NASA FIRMS across major world regions, with volcanic and industrial heat flagged, area selection, anomaly view and CSV export.
 
 Base layers: CARTO dark, NASA GIBS MODIS true colour and MODIS land surface temperature, terrain hillshade.
 
@@ -36,7 +36,7 @@ Saved copies in `public/data` so the demo still works on a bad connection:
 npm run fire
 ```
 
-Downloads the FIRMS yearly archives for Ethiopia (MODIS from 2000, VIIRS S-NPP from 2012, NOAA-20 from 2018) into `../data/raw/firms` and writes `public/data/fire_calendar.json`. Use `-- --from 2015 --to 2025` for a shorter run. If FIRMS is slow, download the yearly Ethiopia CSVs by hand from the FIRMS country archive page into `../data/raw/firms` and run it again; it uses whatever is there.
+Downloads the FIRMS yearly archives across major global fire-active countries and regions (MODIS from 2000, VIIRS S-NPP from 2012, NOAA-20 from 2018) into `../data/raw/firms` and writes `public/data/fire_calendar.json`. Use `-- --from 2015 --to 2025` for a shorter run. If FIRMS is slow, download the yearly Ethiopia CSVs by hand from the FIRMS country archive page into `../data/raw/firms` and run it again; it uses whatever is there.
 
 ### Radar products
 
