@@ -134,7 +134,6 @@
 </div>
 
 <style>
-  /* unchanged */
   .shell { display: flex; flex-direction: column; height: 100%; }
   .top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 20px; padding: 12px var(--pad); }
   .wordmark { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 13px; letter-spacing: 0.12em; }
@@ -154,13 +153,39 @@
   .map { position: absolute; inset: 0; }
   aside { position: absolute; top: 14px; right: 14px; bottom: 14px; width: 410px; overflow-y: auto;
     background: var(--paper); border: 1px solid var(--ink); padding: 16px 18px; }
+
+  /* MOBILE FIX */
   @media (max-width: 960px) {
-    .mast { grid-template-columns: 1fr; gap: 12px; }
-    .meta { text-align: left; }
-    .top { grid-template-columns: auto 1fr; }
-    .top nav { grid-column: 1 / -1; }
-    main { display: flex; flex-direction: column; }
-    .map { position: relative; height: 55vh; inset: auto; }
-    aside { position: static; width: auto; border-width: 1px 0 0; }
+    :global(body) { overflow-x: hidden; } /* Prevent horizontal scrolling */
+    
+    .top { grid-template-columns: auto 1fr; gap: 10px; padding: 10px var(--pad); }
+    .top-rule { display: none; } /* Hide the striped line */
+    .top nav { grid-column: 1 / -1; justify-content: flex-start; overflow-x: auto; padding-bottom: 4px; }
+    
+    .mast { grid-template-columns: 1fr; gap: 12px; padding-bottom: 10px; }
+    .mast h1 { font-size: 24px; } /* Smaller title */
+    .meta { display: none; } /* Hide date/team on mobile to save space */
+    
+    .find { width: 100%; }
+    .find input { flex: 1; width: 100%; }
+    
+    .layerbar { flex-direction: column; align-items: stretch; gap: 10px; padding: 10px var(--pad); }
+    .field { justify-content: space-between; }
+    .field select, .field input[type="date"] { flex: 1; max-width: 65%; }
+    
+    main { display: flex; flex-direction: column; overflow-y: auto; }
+    .map { position: relative; height: 45vh; inset: auto; flex: none; }
+    
+    aside { 
+      position: relative; 
+      width: auto; 
+      height: auto; 
+      flex: 1; 
+      inset: auto; 
+      border: none; 
+      border-top: 1px solid var(--ink); 
+      padding: 16px var(--pad); 
+      background: var(--paper);
+    }
   }
 </style>
