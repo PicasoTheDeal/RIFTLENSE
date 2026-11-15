@@ -1,21 +1,21 @@
 # RIFTLENS
 
-**Ethiopia's Afar rift is Mars happening in real time. RIFTLENS measures it, and protects the people living on it.**
+**Ethiopia's Afar rift is Mars happening in real time. RIFTLENS measures it, showing exactly how the environment destroys the hardware we leave behind.**
 
 ![Dallol hydrothermal field, Afar, Ethiopia](pitch/images/dallol_1.jpg)
 <sub>Dallol, Afar Region, Ethiopia. Photo: A. Savin, FAL licence, via Wikimedia Commons.</sub>
 
 Team **N0xCod3** for the [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/), Addis Ababa local event, 14 to 15 November 2026, Shaggar Institute of Technology.
 
-**Challenge:** [Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars](https://www.spaceappschallenge.org/2026/challenges/permanent-moon-base-locations-and-mars/)
+**Challenge:** [Abandoned but not Forgotten: Storytelling about NASA's Discarded Equipment on the Moon and Mars](https://www.spaceappschallenge.org/2026/challenges/abandoned-but-not-forgotten-storytelling-about-nasas-discarded-equipment-on-the-moon-and-mars/)
 
 ## The idea
 
-NASA tests equipment for the Moon and Mars at places on Earth that behave like them. The usual list is Atacama, Iceland, Devon Island. One of the strongest candidates sits in Ethiopia and has barely been characterised with data.
+To tell the story of equipment abandoned on Mars and the Moon, you must understand the environment that destroys it. NASA tests equipment at places on Earth that behave like these hostile worlds. The usual list is Atacama, Iceland, Devon Island. One of the strongest candidates sits in Ethiopia and has barely been characterised with data.
 
-Afar has Dallol, an acidic, hypersaline hydrothermal field astrobiologists use to study life at its limits. It has Erta Ale, one of the few persistent lava lakes on Earth. And it is actively splitting apart. Between December 2024 and early 2025 a magma intrusion under Fentale and Dofan caused thousands of earthquakes, cracked the Addis to Djibouti road and railway, and displaced tens of thousands of people. Satellite radar saw the ground move before the cracks opened.
+Afar has Dallol, an acidic, hypersaline hydrothermal field that eats through metal. It has Erta Ale, one of the few persistent lava lakes on Earth. And it is actively splitting apart. Between December 2024 and early 2025 a magma intrusion under Fentale and Dofan caused thousands of earthquakes, cracked the Addis to Djibouti road and railway, and displaced tens of thousands of people. Satellite radar saw the ground move before the cracks opened.
 
-RIFTLENS is one interactive web map built with **Svelte 5, Vite, and MapLibre GL JS** featuring three analytical layers and real-time NASA GIBS satellite raster overlays.
+RIFTLENS is one interactive web map built with **Svelte 5, Vite, and MapLibre GL JS** featuring three analytical layers, 3D terrain, and real-time NASA GIBS satellite raster overlays. It acts as a living laboratory for the forces that weather and bury abandoned spacecraft.
 
 ## The three layers
 
@@ -30,9 +30,9 @@ A similarity score (0–100) comparing 44 preset global sites—or any clicked p
 
 Tracks ground deformation and seismic swarms over the Awash–Fentale corridor and global rift/volcanic regions on an interactive weekly or monthly time slider.
 
-* **Seismic & Radar Integration:** Queries live USGS earthquake catalogues alongside Sentinel-1 SAR acquisition footprints from the Alaska Satellite Facility (ASF) API.
-* **InSAR Overlays:** Supports georeferenced interferograms and coherence PNG overlays (`public/data/radar/manifest.json`) that appear dynamically as the time slider passes their acquisition dates.
-* **Infrastructure Context:** Highlights critical assets including the Addis–Djibouti railway, roads, towns, and geothermal fields.
+* **3D Terrain & Color Relief:** Renders the Afar rift in 3D with a vivid topographic color relief layer to visualize the tectonic forces pulling the crust apart.
+* **Seismic Swarm Heatmap:** Displays live USGS earthquake data as glowing embers and heatmaps that fade over time, mimicking the real-time destruction of the surface.
+* **Radar Integration:** Queries Sentinel-1 SAR acquisition footprints from the Alaska Satellite Facility (ASF) API. Georeferenced interferograms and coherence PNG overlays (`public/data/radar/manifest.json`) appear dynamically as the time slider passes their acquisition dates.
 
 ### 3. The Pulse (`PulsePanel` & `WorldPulse`)
 
@@ -43,7 +43,7 @@ Combines global real-time natural event tracking with a 26-year harmonised therm
 
 ### Base Maps & Satellite Overlays
 
-* **Vector Base Map:** OpenFreeMap vector tiles with dynamic Dark/Light "paper and ink" theming and SRTM terrain hillshading.
+* **Vector Base Map:** OpenFreeMap vector tiles with dynamic Dark/Light "paper and ink" theming (reactive across all panels) and SRTM terrain hillshading.
 * **NASA GIBS WMTS Overlays:** Switchable daily/static satellite layers (MODIS/VIIRS Land Surface Temperature, Surface Albedo, Snow Cover, SMAP Soil Moisture, VIIRS True Colour, ASTER 30 m Shaded Relief, and VIIRS Night Lights) with date selection and raster texture filters (Mono, High Contrast, Inverted, Hue Shifted).
 
 ---
@@ -68,16 +68,16 @@ Publish the resulting `app/dist/` directory.
 
 ### 2. Build the Harmonised Fire Calendar (`npm run fire`)
 
-To generate or update `app/public/data/fire_calendar.json` from NASA FIRMS yearly archives:
+To generate or update `app/public/data/fire_calendar.json` from NASA FIRMS yearly archives across the configured global regions:
 
 ```bash
 cd app
 npm run fire
-# Or specify a custom year range / country:
-npm run fire -- --from 2015 --to 2026 --country Ethiopia
+# Or specify a custom year range:
+npm run fire -- --from 2015 --to 2026
 ```
 
-Note: The script downloads MODIS (2000+), VIIRS S-NPP (2012+), and VIIRS NOAA-20 (2018+) CSVs into `data/raw/firms/`, computes per-cell VIIRS/MODIS overlap scaling ratios, and flags static volcanic heat.
+Note: The script downloads MODIS (2000+), VIIRS S-NPP (2012+), and VIIRS NOAA-20 (2018+) CSVs into `data/raw/firms/`, computes per-cell VIIRS/MODIS overlap scaling ratios, and flags static volcanic heat. If the network is slow, it will reuse any previously cached CSVs in that folder.
 
 ### 3. Add Processed InSAR / Radar Products
 
@@ -116,7 +116,7 @@ Full notes on datasets are in `docs/DATA_SOURCES.md`.
 
 | Site | What it is | Analog role |
 | --- | --- | --- |
-| Dallol | Hydrothermal salt and sulphur field | Mars hydrothermal chemistry, extremophiles |
+| Dallol | Hydrothermal salt and sulphur field | Mars hydrothermal chemistry, corroding hardware |
 | Erta Ale | Shield volcano with persistent lava lake | Volcanic processes, persistent thermal anomaly |
 | Danakil salt flats | Below-sea-level evaporite basin | Martian evaporites and salts |
 | Fentale & Dofan | 2024–2025 dyke intrusion & seismic swarm | Active rifting, Cerberus Fossae on Mars |
@@ -130,7 +130,7 @@ app/                  Svelte 5 + Vite + MapLibre web application
   public/data/        Offline seed JSONs, fire calendar, and radar overlays
   scripts/            Node.js data pipeline (build_fire_calendar.mjs)
   src/components/     AnalogPanel, DancePanel, PulsePanel, WorldPulse, ScoreCard
-  src/lib/            Scoring math (analog.js), API clients (sources.js), sites & styles
+  src/lib/            Scoring math (analog.js), API clients (sources.js), sites, theme & styles
 data/raw/             Raw FIRMS/satellite downloads (gitignored)
 docs/                 Data sources and methodology notes
 pitch/                Presentation slides, image bank, and credits
